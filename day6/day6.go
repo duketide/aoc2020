@@ -14,16 +14,7 @@ type void = struct{}
 
 var member void
 
-func single_yes_counter(s []string) int {
-	joined := strings.TrimRight(strings.Join(s, ""), "\n")
-	seen := make(map[rune]void)
-	for _, ltr := range joined {
-		seen[ltr] = member
-	}
-	return len(seen)
-}
-
-func all_yes_counter(s []string) int {
+func all_yes_counter(s []string) (int, int) {
 	joined := strings.TrimRight(strings.Join(s, ""), "\n")
 	seen := make(map[rune]int)
 	for _, ltr := range joined {
@@ -35,23 +26,17 @@ func all_yes_counter(s []string) int {
 			cnt++
 		}
 	}
-	return cnt
-}
-
-func d6p1(groups [][]string) string {
-	var sum int
-	for _, group := range groups {
-		sum += single_yes_counter(group)
-	}
-	return "Part 1 " + fmt.Sprint(sum)
+	return len(seen), cnt
 }
 
 func d6p2(groups [][]string) string {
-	var sum int
+	var sum1, sum2 int
 	for _, group := range groups {
-		sum += all_yes_counter(group)
+		inc1, inc2 := all_yes_counter(group)
+		sum1 += inc1
+		sum2 += inc2
 	}
-	return " Part 2 " + fmt.Sprint(sum)
+	return "Part 1 " + fmt.Sprint(sum1) + " Part 2 " + fmt.Sprint(sum2)
 }
 
 func Day6() string {
@@ -60,5 +45,5 @@ func Day6() string {
 	for i, v := range groups {
 		lines[i] = parse.Lines(v)
 	}
-	return "Day 6 " + d6p1(lines) + d6p2(lines)
+	return "Day 6 " + d6p2(lines)
 }
