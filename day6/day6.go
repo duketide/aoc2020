@@ -10,10 +10,6 @@ import (
 //go:embed day6.txt
 var input string
 
-type void = struct{}
-
-var member void
-
 func all_yes_counter(s []string) (int, int) {
 	joined := strings.TrimRight(strings.Join(s, ""), "\n")
 	seen := make(map[rune]int)
