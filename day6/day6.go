@@ -2,6 +2,7 @@ package day6
 
 import (
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 	"strings"
@@ -36,6 +37,7 @@ func d6p2(groups [][]string) string {
 }
 
 func Day6() string {
+	defer perf.Duration(perf.Track("Day6"))
 	groups := strings.Split(strings.TrimRight(input, "\n"), "\n\n")
 	lines := make([][]string, len(groups))
 	for i, v := range groups {

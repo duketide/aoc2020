@@ -3,6 +3,7 @@ package day2
 import (
 	"aoc2020/err"
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 	"strconv"
@@ -62,6 +63,7 @@ func d2p2(l [][]string) string {
 }
 
 func Day2() string {
+	defer perf.Duration(perf.Track("Day2"))
 	lines := parse.Lines(input)
 	words := make([][]string, len(lines))
 	for index, val := range lines {

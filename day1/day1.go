@@ -3,6 +3,7 @@ package day1
 import (
 	s "aoc2020/ds/set"
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 )
@@ -35,6 +36,7 @@ func d1p2(set s.IntSet) string {
 }
 
 func Day1() string {
+	defer perf.Duration(perf.Track("Day1"))
 	set := s.StrArrToIntSet(parse.Lines(input))
 	return "Day 1 " + d1p1(set) + d1p2(set)
 }

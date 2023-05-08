@@ -2,6 +2,7 @@ package day4
 
 import (
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 	"strconv"
@@ -126,6 +127,7 @@ func d4p2(l [][]string) string {
 }
 
 func Day4() string {
+	defer perf.Duration(perf.Track("Day4"))
 	lines := strings.Split(strings.TrimRight(input, "\n"), "\n\n")
 	words := make([][]string, len(lines))
 	for ind, str := range lines {

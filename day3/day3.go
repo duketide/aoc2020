@@ -2,6 +2,7 @@ package day3
 
 import (
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 )
@@ -30,6 +31,7 @@ func d3p2(l []string) string {
 }
 
 func Day3() string {
+	defer perf.Duration(perf.Track("Day3"))
 	lines := parse.Lines(input)
 	return "Day 3 " + d3p1(lines) + d3p2(lines)
 }
