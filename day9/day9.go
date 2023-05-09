@@ -13,7 +13,7 @@ import (
 //go:embed day9.txt
 var input string
 
-func d9p1(nums *[]int) string {
+func d9p1(nums *[]int) int {
 	current := 25
 	for current < len(*nums) {
 		target := (*nums)[current]
@@ -30,11 +30,43 @@ func d9p1(nums *[]int) string {
 			}
 		}
 		if !flag {
-			return "Part 1 " + fmt.Sprint(target)
+			return target
 		}
 		current++
 	}
 	panic("hmph")
+}
+
+func d9p2(nums *[]int) string {
+	part_one := d9p1(nums)
+	left, right := 0, 1
+	end := len(*nums) - 1
+	sum := (*nums)[left] + (*nums)[right]
+	var max, min, part_two int
+	for left < end && right < end {
+		if sum == part_one {
+			max, min = (*nums)[left], (*nums)[left]
+			for _, v := range (*nums)[left : right+1] {
+				if v > max {
+					max = v
+				}
+				if v < min {
+					min = v
+				}
+			}
+			part_two = max + min
+			break
+		}
+		if sum < part_one || left == right-1 {
+			right++
+			sum += (*nums)[right]
+		}
+		if sum > part_one {
+			sum -= (*nums)[left]
+			left++
+		}
+	}
+	return "Part 1 " + fmt.Sprint(part_one) + " Part 2 " + fmt.Sprint(part_two)
 }
 
 func Day9() string {
@@ -46,5 +78,5 @@ func Day9() string {
 		err.Check(e)
 		nums[i] = num
 	}
-	return "Day 9 " + d9p1(&nums)
+	return "Day 9 " + d9p2(&nums)
 }
