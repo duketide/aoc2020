@@ -6,7 +6,6 @@ import (
 	"aoc2020/perf"
 	_ "embed"
 	"fmt"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -45,11 +44,8 @@ func Day13() string {
 			p1 = wait * id
 		}
 	}
-	sort.Slice(ids, func(i, j int) bool { return ids[i] > ids[j] })
-	flag := false
-	n, c := 0, 1
 	var p2 int
-	for i := c; !flag; i += c {
+	for flag, n, c, i := false, 0, 1, 1; !flag; i += c {
 		flag = true
 		if (i+id_map[ids[n]])%ids[n] == 0 {
 			c *= ids[n]
