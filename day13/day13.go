@@ -56,12 +56,10 @@ func Day13() string {
 				flag = false
 				break
 			}
-
 		}
 		if flag {
 			p2 = i
 		}
 	}
-
 	return "Day 13 Part 1 " + fmt.Sprint(p1) + " Part 2 " + fmt.Sprint(p2)
 }
