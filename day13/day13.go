@@ -6,6 +6,7 @@ import (
 	"aoc2020/perf"
 	_ "embed"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -21,24 +22,14 @@ func Day13() string {
 	raw_ids := strings.Split(lines[1], ",")
 	var ids []int
 	var id_map = make(map[int]int)
-	var max int
 	for index, id := range raw_ids {
 		if id == "x" {
 			continue
 		}
 		id, e2 := strconv.Atoi(id)
 		err.Check(e2)
-		if id > max {
-			max = id
-		}
 		ids = append(ids, id)
 		id_map[id] = index
-	}
-	var sub_max int
-	for _, id := range ids {
-		if id > sub_max && id != max {
-			sub_max = id
-		}
 	}
 	var p1 int
 	var min_wait = 1000000
@@ -54,13 +45,16 @@ func Day13() string {
 			p1 = wait * id
 		}
 	}
-	var p2 = max - id_map[max]
-	for (p2+id_map[sub_max])%sub_max != 0 || (p2+id_map[max])%max != 0 {
-		p2 += max
-	}
+	sort.Slice(ids, func(i, j int) bool { return ids[i] > ids[j] })
 	flag := false
-	for i := p2; !flag; i += max * sub_max {
+	n, c := 0, 1
+	var p2 int
+	for i := c; !flag; i += c {
 		flag = true
+		if (i+id_map[ids[n]])%ids[n] == 0 {
+			c *= ids[n]
+			n++
+		}
 		for k, v := range id_map {
 			if (i+v)%k != 0 {
 				flag = false
