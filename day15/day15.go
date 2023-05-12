@@ -27,16 +27,23 @@ func Day15() string {
 			tracker[num] = i
 		}
 	}
-	for len(list) < 30000000 {
-		idx := len(list) - 1
-		last := list[idx]
+	idx := len(list) - 1
+	last := list[len(list)-1]
+	var p1, p2 int
+	for idx < 30000000 {
 		val, member := tracker[last]
-		next := 0
-		if member {
-			next = idx - val
-		}
 		tracker[last] = idx
-		list = append(list, next)
+		if idx == 2019 {
+			p1 = last
+		}
+		if idx == 29999999 {
+			p2 = last
+		}
+		last = 0
+		if member {
+			last = idx - val
+		}
+		idx++
 	}
-	return "Day 15 Part 1 " + fmt.Sprint(list[2019]) + " Part 2 " + fmt.Sprint(list[29999999])
+	return "Day 15 Part 1 " + fmt.Sprint(p1) + " Part 2 " + fmt.Sprint(p2)
 }
