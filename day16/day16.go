@@ -6,6 +6,7 @@ import (
 	"aoc2020/perf"
 	_ "embed"
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -136,16 +137,23 @@ func Day16() string {
 		}
 		curr++
 	}
+	field_test_order := make([]int, t_length)
+	for i := range field_test_order {
+		field_test_order[i] = i
+	}
+	sort.Slice(field_test_order, func(i, j int) bool { return len(perm_seen[i]) > len(perm_seen[j]) })
 	curr = 0
 	for curr < t_length {
-		test := get_field_index(&curr, &valid_tix, &bare_field_ranges, &temp_seen, &perm_seen, &index_in_fields)
-		index_in_fields[curr] = test
+		tick_index := field_test_order[curr]
+		test := get_field_index(&tick_index, &valid_tix, &bare_field_ranges, &temp_seen, &perm_seen, &index_in_fields)
+		index_in_fields[tick_index] = test
 
 		//backtrack
 		if test == -1 {
-			temp_seen[curr] = make([]int, 0)
+			temp_seen[tick_index] = make([]int, 0)
 			curr--
-			temp_seen[curr] = append(temp_seen[curr], index_in_fields[curr])
+			tick_index := field_test_order[curr]
+			temp_seen[tick_index] = append(temp_seen[tick_index], index_in_fields[tick_index])
 			continue
 		}
 		curr++
