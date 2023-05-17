@@ -18,14 +18,6 @@ type rule = struct {
 	either [][]string
 }
 
-type loop_state = struct {
-	eights, elevens, eight_len, eleven_len, max_len int
-}
-
-var inc = 0
-
-func p() int { inc++; return inc }
-
 func eval(rules *map[string]*rule, rule_num *string) []string {
 	rule := (*rules)[*rule_num]
 	switch rule.kind {
