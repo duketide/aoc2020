@@ -18,6 +18,14 @@ type rule = struct {
 	either [][]string
 }
 
+type loop_state = struct {
+	eights, elevens, eight_len, eleven_len, max_len int
+}
+
+var inc = 0
+
+func p() int { inc++; return inc }
+
 func eval(rules *map[string]*rule, rule_num *string) []string {
 	rule := (*rules)[*rule_num]
 	switch rule.kind {
@@ -61,6 +69,15 @@ func eval(rules *map[string]*rule, rule_num *string) []string {
 						result = append(result, s+t)
 					}
 				}
+			} else if len(r) == 3 {
+				r1, r2, r3 := eval(rules, &r[0]), eval(rules, &r[1]), eval(rules, &r[2])
+				for _, s := range r1 {
+					for _, t := range r2 {
+						for _, u := range r3 {
+							result = append(result, s+t+u)
+						}
+					}
+				}
 			} else {
 				panic("problem in an either")
 			}
@@ -71,12 +88,9 @@ func eval(rules *map[string]*rule, rule_num *string) []string {
 	}
 }
 
-func Day19() string {
-	defer perf.Duration(perf.Track("Day19"))
-	split := strings.Split(strings.TrimRight(input, "\n"), "\n\n")
-	raw_rules := parse.Lines(split[0])
+func parse_rules(raw_rules *[]string) *map[string]*rule {
 	rules := make(map[string]*rule)
-	for _, r := range raw_rules {
+	for _, r := range *raw_rules {
 		x := strings.Split(r, ": ")
 		num := x[0]
 		val := x[1]
@@ -103,17 +117,72 @@ func Day19() string {
 		}
 
 	}
-	start := "0"
-	zero_slice := eval(&rules, &start)
-	zero_set := make(map[string]bool)
+	return &rules
+}
+
+//I could see that all strings returned at 42 and 31 were of length 8
+//That was crucial for this @check function
+
+func check(msg *string, set_42, set_31 *map[string]bool) bool {
+	matches := true
+	second := false
+	l := 0
+	forty_twos := 0
+	thirty_ones := 0
+	length := len(*msg)
+	for matches && l+8 <= length {
+		test := (*msg)[l : l+8]
+		if !second {
+			matches = (*set_42)[test]
+			if matches {
+				forty_twos++
+			}
+			if !matches {
+				second = true
+			}
+		}
+		if second {
+			matches = (*set_31)[test]
+			if matches {
+				thirty_ones++
+			}
+		}
+		l += 8
+	}
+	if thirty_ones >= forty_twos || forty_twos < 2 || !(*set_31)[(*msg)[length-8:length]] {
+		matches = false
+	}
+	return matches
+}
+
+func Day19() string {
+	defer perf.Duration(perf.Track("Day19"))
+	split := strings.Split(strings.TrimRight(input, "\n"), "\n\n")
+	raw_rules := parse.Lines(split[0])
+	rules := parse_rules(&raw_rules)
+	messages := parse.Lines(split[1])
+	start, forty_two, thirty_one := "0", "42", "31"
+	zero_slice := eval(rules, &start)
+	forty_twos := eval(rules, &forty_two)
+	thirty_ones := eval(rules, &thirty_one)
+	zero_set, set_42, set_31 := make(map[string]bool), make(map[string]bool), make(map[string]bool)
 	for _, s := range zero_slice {
 		zero_set[s] = true
 	}
-	p1 := 0
-	for _, s := range parse.Lines(split[1]) {
+	for _, val := range forty_twos {
+		set_42[val] = true
+	}
+	for _, val := range thirty_ones {
+		set_31[val] = true
+	}
+	p1, p2 := 0, 0
+	for _, s := range messages {
 		if zero_set[s] {
 			p1++
 		}
+		if check(&s, &set_42, &set_31) {
+			p2++
+		}
 	}
-	return "Day 19 Part 1 " + fmt.Sprint(p1)
+	return "Day 19 Part 1 " + fmt.Sprint(p1) + " Part 2 " + fmt.Sprint(p2)
 }
