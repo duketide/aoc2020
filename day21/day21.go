@@ -3,6 +3,7 @@ package day21
 import (
 	"aoc2020/ds/set"
 	"aoc2020/parse"
+	"aoc2020/perf"
 	_ "embed"
 	"fmt"
 	"sort"
@@ -29,6 +30,7 @@ func get_singles(a map[string](map[string]bool)) map[string]bool {
 }
 
 func Day21() string {
+	defer perf.Duration(perf.Track("Day21"))
 	lines := parse.Lines(input)
 	recipes := make([]recipe, len(lines))
 	for i, line := range lines {
