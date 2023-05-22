@@ -122,7 +122,7 @@ func getBits(s string) (int, int) {
 
 func getSquare(lines []string) []int {
 	// this function reads bits clockwise
-	// the second half of the returned array is the flipped circle
+	// the second half of the returned array is the flipped square
 	// so it swaps the left and right sides (indices 4 and 6)
 	up := lines[0]
 	down := lines[len(lines)-1]
@@ -243,6 +243,7 @@ func Day20() string {
 			})
 		}
 	}
+	//square is 12 by 12, so a gross
 	gross := make([][]square, 12)
 	gross[0] = append(gross[0], corners[0])
 	for i := 1; i < len(gross); i++ {
