@@ -12,89 +12,33 @@ import (
 //go:embed day23.txt
 var input string
 
-func moves(cups *[]int, num_moves int) {
-	current := (*cups)[0]
-	num_cups := len(*cups)
-	curr_index := 0
+func moves(cups *[]int, num_moves int, starter int) {
+	num_cups := len(*cups) - 1
 	mvs := num_moves
+	current := starter
 	for mvs > 0 {
-		move_indices := []int{(curr_index + 1) % num_cups, (curr_index + 2) % num_cups, (curr_index + 3) % num_cups}
+		mover1 := (*cups)[current]
+		mover2 := (*cups)[mover1]
+		mover3 := (*cups)[mover2]
+		next := (*cups)[mover3]
+		dest := current - 1
 		mover_set := make(map[int]bool)
-		for _, v := range move_indices {
-			mover_set[v] = true
+		for _, val := range []int{mover1, mover2, mover3} {
+			mover_set[val] = true
 		}
-		target := current - 1
-		target_found := false
-		for !target_found {
-			if target == 0 {
-				target = num_cups
+		for mover_set[dest] || dest < 1 {
+			if dest < 1 {
+				dest = num_cups
 			}
-			for i, v := range *cups {
-				if v == target {
-					if !mover_set[i] {
-						target_found = true
-						break
-					} else {
-						target--
-						break
-					}
-				}
+			if mover_set[dest] {
+				dest--
 			}
 		}
-		var new_nums []int
-		for i, v := range *cups {
-			if mover_set[i] {
-				continue
-			}
-			new_nums = append(new_nums, v)
-			if v == target {
-				for _, ind := range move_indices {
-					new_nums = append(new_nums, (*cups)[ind])
-				}
-			}
-		}
-		for i, v := range new_nums {
-			if v == current {
-				curr_index = (i + 1) % 9
-				current = new_nums[curr_index]
-				break
-			}
-		}
-		(*cups) = new_nums
+		(*cups)[mover3] = (*cups)[dest]
+		(*cups)[dest] = mover1
+		(*cups)[current] = next
+		current = next
 		mvs--
-	}
-}
-func moves2(cups *[]int, num_moves int) {
-	num_cups := len(*cups)
-	mvs := num_moves
-	for mvs > 0 {
-		current := (*cups)[0]
-		movers := (*cups)[1:4]
-		rest := (*cups)[4:]
-		rest_copy := make([]int, len(rest))
-		copy(rest_copy, rest)
-		mover_set := make(map[int]bool)
-		for _, v := range movers {
-			mover_set[v] = true
-		}
-		target := current - 1
-		for mover_set[target] || target < 1 {
-			if target < 1 {
-				target = num_cups
-			}
-			if mover_set[target] {
-				target--
-			}
-		}
-		for i, v := range rest {
-			if v == target {
-				*cups = append(rest_copy[:i+1], append(movers, append(rest[i+1:], current)...)...)
-				mvs--
-				if mvs%10000 == 0 {
-				}
-				break
-			}
-		}
 	}
 }
 
@@ -106,33 +50,29 @@ func Day23() string {
 		err.Check(e)
 		nums = append(nums, num)
 	}
-	nums2 := make([]int, 1000000)
-	copy(nums2, nums)
-	for i := range nums2 {
-		if i > 8 {
-			nums2[i] = i + 1
-		}
+	starter := nums[0]
+	//create a pseudo-linked-list with []int
+	numsll := make([]int, len(nums)+1)
+	for i, num := range nums {
+		numsll[num] = nums[(i+1)%len(nums)]
 	}
-	moves2(&nums, 100)
-	one_index := -1
-	for i, v := range nums {
-		if v == 1 {
-			one_index = i
-			break
-		}
+	nums2 := make([]int, 1000001)
+	copy(nums2, numsll)
+	nums2[nums[len(nums)-1]] = 10
+	for i := 10; i < 1000000; i++ {
+		nums2[i] = i + 1
 	}
-	p1 := ""
-	for i := 1; i < 9; i++ {
-		p1 += fmt.Sprint(nums[(i+one_index)%9])
+	nums2[1000000] = nums[0]
+	moves(&numsll, 100, starter)
+	c := numsll[1]
+	p1 := fmt.Sprint(c)
+	for numsll[c] != 1 {
+		p1 += fmt.Sprint(numsll[c])
+		c = numsll[c]
 	}
-	moves2(&nums2, 10000000)
-	one_index_2 := -1
-	for i, v := range nums2 {
-		if v == 1 {
-			one_index_2 = i
-			break
-		}
-	}
-	p2 := nums2[(one_index_2+1)%1000000] * nums2[(one_index_2+2)%1000000]
+	moves(&nums2, 10000000, starter)
+	first := nums2[1]
+	second := nums2[first]
+	p2 := first * second
 	return "Day 23 Part 1 " + p1 + " Part 2 " + fmt.Sprint(p2)
 }
