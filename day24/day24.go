@@ -76,11 +76,38 @@ func Day24() string {
 			p2_tracker[k] = true
 		}
 	}
-	/*var adjacents []pair
+	var adjacents []pair
+	for x := -2; x <= 2; x++ {
+		if x == 0 {
+			continue
+		}
+		if x%2 == 0 {
+			adjacents = append(adjacents, pair{x, 0})
+			continue
+		}
+		for y := -1; y <= 1; y += 2 {
+			adjacents = append(adjacents, pair{x, y})
+		}
+	}
 
 	turns := 100
-	for turns >0 {
-	}*/
+	for turns > 0 {
+		counter := make(map[string]int)
+		next := make(map[string]bool)
+		for k := range p2_tracker {
+			x, y := destringify(k)
+			for _, pair := range adjacents {
+				counter[stringify(x+pair.x, y+pair.y)]++
+			}
+		}
+		for k, v := range counter {
+			if (v == 2) || (v == 1 && p2_tracker[k]) {
+				next[k] = true
+			}
+		}
+		p2_tracker = next
+		turns--
+	}
 
-	return "Day 24 Part 1 " + fmt.Sprint(p1)
+	return "Day 24 Part 1 " + fmt.Sprint(p1) + " Part 2 " + fmt.Sprint(len(p2_tracker))
 }
